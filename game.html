@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎮 Desvie dos Blocos</title>
+
+<style>
+    body{
+        margin:0;
+        background:#111;
+        overflow:hidden;
+        font-family:Arial;
+        color:white;
+        text-align:center;
+    }
+
+    h1{
+        margin-top:10px;
+    }
+
+    #game{
+        width:400px;
+        height:600px;
+        background:#222;
+        margin:20px auto;
+        position:relative;
+        overflow:hidden;
+        border:4px solid white;
+        border-radius:10px;
+    }
+
+    #player{
+        width:50px;
+        height:50px;
+        background:lime;
+        position:absolute;
+        bottom:20px;
+        left:175px;
+        border-radius:10px;
+    }
+
+    .enemy{
+        width:50px;
+        height:50px;
+        background:red;
+        position:absolute;
+        top:-50px;
+        border-radius:10px;
+    }
+
+    #score{
+        font-size:25px;
+    }
+
+    #gameover{
+        display:none;
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform:translate(-50%, -50%);
+        background:black;
+        padding:20px;
+        border:3px solid white;
+        border-radius:10px;
+    }
+
+    button{
+        padding:10px 20px;
+        font-size:18px;
+        cursor:pointer;
+        border:none;
+        border-radius:8px;
+    }
+</style>
+</head>
+<body>
+
+<h1>🔥 DESVIE DOS BLOCOS 🔥</h1>
+<div id="score">Pontos: 0</div>
+
+<div id="game">
+
+    <div id="player"></div>
+
+    <div id="gameover">
+        <h2>💀 GAME OVER</h2>
+        <button onclick="location.reload()">Jogar Novamente</button>
+    </div>
+
+</div>
+
+<script>
+
+const game = document.getElementById("game");
+const player = document.getElementById("player");
+const scoreText = document.getElementById("score");
+const gameover = document.getElementById("gameover");
+
+let playerX = 175;
+let score = 0;
+let running = true;
+
+document.addEventListener("keydown", (e)=>{
+
+    if(e.key === "a" || e.key === "ArrowLeft"){
+        playerX -= 25;
+    }
+
+    if(e.key === "d" || e.key === "ArrowRight"){
+        playerX += 25;
+    }
+
+    if(playerX < 0){
+        playerX = 0;
+    }
+
+    if(playerX > 350){
+        playerX = 350;
+    }
+
+    player.style.left = playerX + "px";
+
+});
+
+function createEnemy(){
+
+    if(!running) return;
+
+    const enemy = document.createElement("div");
+    enemy.classList.add("enemy");
+
+    let enemyX = Math.floor(Math.random() * 8) * 50;
+
+    enemy.style.left = enemyX + "px";
+
+    game.appendChild(enemy);
+
+    let enemyY = -50;
+
+    const move = setInterval(()=>{
+
+        if(!running){
+            clearInterval(move);
+            return;
+        }
+
+        enemyY += 5;
+        enemy.style.top = enemyY + "px";
+
+        // colisão
+        if(
+            enemyY > 500 &&
+            enemyY < 570 &&
+            enemyX < playerX + 50 &&
+            enemyX + 50 > playerX
+        ){
+            running = false;
+            gameover.style.display = "block";
+        }
+
+        // remove inimigo
+        if(enemyY > 600){
+            enemy.remove();
+            clearInterval(move);
+
+            score++;
+            scoreText.innerText = "Pontos: " + score;
+        }
+
+    },20);
+
+}
+
+setInterval(createEnemy, 900);
+
+</script>
+
+</body>
+</html>
